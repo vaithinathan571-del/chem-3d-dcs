@@ -1,0 +1,19 @@
+{
+  "name": "@chem-3d-dcs/server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Process simulator, control system, SIS, alarm system, historian and API for CHEM-3D DCS",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "test": "node --test \"test/**/*.test.js\""
+  },
+  "dependencies": {
+    "ws": "8.22.0"
+  },
+  "engines": {
+    "node": ">=20.19"
+  }
+}
