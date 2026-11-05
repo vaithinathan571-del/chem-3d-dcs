@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 430" width="1000" height="430" font-family="ui-monospace, Menlo, Consolas, monospace">
+  <title>Unit 100 process flow diagram</title>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#9aa3ad"/>
+    </marker>
+    <marker id="arrB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#4ea1ff"/>
+    </marker>
+    <symbol id="valve" viewBox="-12 -8 24 16" overflow="visible">
+      <path d="M-10 -7 L0 0 L-10 7 z M10 -7 L0 0 L10 7 z" fill="#161b21" stroke="#c9d3dc" stroke-width="1.5"/>
+      <path d="M0 0 V-10 M-6 -10 H6" stroke="#c9d3dc" stroke-width="1.5"/>
+    </symbol>
+  </defs>
+  <rect width="1000" height="430" rx="10" fill="#0e1216"/>
+
+  <g fill="none" stroke="#9aa3ad" stroke-width="2.2" stroke-linejoin="round">
+    <!-- fresh feed -->
+    <path d="M6 172 H40" marker-end="url(#arr)"/>
+    <!-- T-101 to P-101 to E-101 -->
+    <path d="M70 262 V292 H126"/>
+    <path d="M154 292 H250"/>
+    <!-- E-101 to R-101 -->
+    <path d="M312 292 H338 V122 H392" marker-end="url(#arr)"/>
+    <!-- R-101 to P-102 to column -->
+    <path d="M430 262 V300 H470"/>
+    <path d="M498 300 H566 V232 H598" marker-end="url(#arr)"/>
+    <!-- column overhead to condenser, drum -->
+    <path d="M625 62 V38 H722 V60"/>
+    <path d="M748 88 V120"/>
+    <path d="M748 158 V190"/>
+    <!-- reflux -->
+    <path d="M734 204 H684 V94 H652" marker-end="url(#arr)"/>
+    <!-- bottoms -->
+    <path d="M625 342 V378 H660"/>
+    <path d="M688 378 H760"/>
+    <path d="M812 378 H830 V262 H848" marker-end="url(#arr)"/>
+    <!-- export -->
+    <path d="M885 352 V398 H920"/>
+    <path d="M948 398 H996" marker-end="url(#arr)"/>
+    <!-- reboiler loop -->
+    <path d="M650 322 H678"/>
+    <path d="M700 308 V292 H652" marker-end="url(#arr)"/>
+  </g>
+  <!-- recycle -->
+  <path d="M762 204 H836 V18 H92 V148" fill="none" stroke="#4ea1ff" stroke-width="2.2" stroke-dasharray="7 4" marker-end="url(#arrB)"/>
+  <text x="430" y="13" fill="#4ea1ff" font-size="11" text-anchor="middle">distillate recycle (unreacted A)</text>
+
+  <!-- utilities -->
+  <g fill="none" stroke-width="1.8">
+    <path d="M281 238 V262" stroke="#c98272" marker-end="url(#arr)"/>
+    <path d="M360 200 H372" stroke="#5aa894"/>
+    <path d="M700 352 V334" stroke="#c98272"/>
+    <path d="M770 74 H790" stroke="#5aa894"/>
+    <path d="M786 352 V368" stroke="#5aa894"/>
+  </g>
+  <g font-size="10" fill="#8a96a3">
+    <text x="281" y="232" text-anchor="middle" fill="#c98272">steam</text>
+    <text x="356" y="196" text-anchor="end" fill="#5aa894">CW</text>
+    <text x="700" y="365" text-anchor="middle" fill="#c98272">steam</text>
+    <text x="794" y="78" fill="#5aa894">CW</text>
+    <text x="786" y="350" text-anchor="middle" fill="#5aa894">CW</text>
+    <text x="6" y="196">fresh A</text>
+    <text x="996" y="384" text-anchor="end">product B</text>
+  </g>
+
+  <!-- equipment -->
+  <g fill="#161b21" stroke="#c9d3dc" stroke-width="2">
+    <rect x="40" y="150" width="60" height="112" rx="5"/>
+    <circle cx="140" cy="292" r="14"/>
+    <rect x="250" y="277" width="62" height="30" rx="15"/>
+    <rect x="390" y="104" width="80" height="158" rx="22"/>
+    <circle cx="484" cy="300" r="14"/>
+    <rect x="600" y="58" width="50" height="286" rx="25"/>
+    <rect x="690" y="60" width="78" height="28" rx="14"/>
+    <rect x="704" y="120" width="88" height="38" rx="19"/>
+    <circle cx="748" cy="204" r="14"/>
+    <rect x="678" y="310" width="44" height="24" rx="12"/>
+    <circle cx="674" cy="378" r="14"/>
+    <rect x="760" y="366" width="52" height="24" rx="12"/>
+    <rect x="848" y="236" width="74" height="116" rx="5"/>
+    <circle cx="934" cy="398" r="14"/>
+  </g>
+  <!-- reactor jacket and agitator -->
+  <rect x="382" y="150" width="96" height="102" rx="10" fill="none" stroke="#5aa894" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <path d="M430 92 V230 M414 230 H446 M414 190 H446" stroke="#c9d3dc" stroke-width="2"/>
+  <rect x="420" y="80" width="20" height="14" fill="#46c46e"/>
+  <!-- column trays -->
+  <g stroke="#5b6672" stroke-width="1.2">
+    <path d="M604 90 H646 M604 112 H646 M604 134 H646 M604 156 H646 M604 178 H646 M604 200 H646 M604 222 H646 M604 244 H646 M604 266 H646 M604 288 H646"/>
+  </g>
+  <!-- liquid -->
+  <rect x="42" y="205" width="56" height="55" fill="#4f9dff" opacity="0.55"/>
+  <rect x="392" y="170" width="76" height="90" rx="18" fill="#c4a372" opacity="0.5"/>
+  <rect x="850" y="292" width="70" height="58" fill="#f0a64a" opacity="0.55"/>
+
+  <!-- valves -->
+  <use href="#valve" x="10" y="164" width="24" height="16"/>
+  <use href="#valve" x="178" y="284" width="24" height="16"/>
+  <use href="#valve" x="522" y="292" width="24" height="16"/>
+  <use href="#valve" x="796" y="196" width="24" height="16"/>
+  <use href="#valve" x="696" y="370" width="24" height="16"/>
+  <use href="#valve" x="952" y="390" width="24" height="16"/>
+
+  <!-- equipment tags -->
+  <g font-size="11" fill="#d7dde4" font-weight="700" text-anchor="middle">
+    <text x="58" y="143">T-101</text>
+    <text x="140" y="322">P-101</text>
+    <text x="281" y="322">E-101</text>
+    <text x="430" y="278">R-101</text>
+    <text x="484" y="330">P-102</text>
+    <text x="625" y="362" text-anchor="end" dx="-30">C-101</text>
+    <text x="729" y="104">E-103</text>
+    <text x="748" y="176" dx="62">D-101</text>
+    <text x="772" y="232">P-103</text>
+    <text x="700" y="300" dx="44">E-104</text>
+    <text x="674" y="408">P-104</text>
+    <text x="786" y="408">E-102</text>
+    <text x="885" y="229">T-102</text>
+    <text x="934" y="425">P-105</text>
+  </g>
+
+  <!-- instrument bubbles -->
+  <g font-size="8.5" fill="#d7dde4" text-anchor="middle">
+    <g stroke="#c9d3dc" stroke-width="1.3" fill="#0e1216">
+      <circle cx="122" cy="176" r="15"/>
+      <circle cx="190" cy="250" r="15"/>
+      <circle cx="312" cy="250" r="15"/>
+      <circle cx="510" cy="140" r="15"/>
+      <circle cx="510" cy="200" r="15"/>
+      <circle cx="510" cy="250" r="15"/>
+      <circle cx="575" cy="80" r="15"/>
+      <circle cx="575" cy="320" r="15"/>
+      <circle cx="822" cy="139" r="15"/>
+    </g>
+    <text x="122" y="179">LIC</text><text x="122" y="203" fill="#8a96a3">101</text>
+    <text x="190" y="253">FIC</text><text x="190" y="277" fill="#8a96a3">101</text>
+    <text x="312" y="253">TIC</text><text x="335" y="253" fill="#8a96a3" text-anchor="start">102</text>
+    <text x="510" y="143">TIC</text><text x="530" y="143" fill="#8a96a3" text-anchor="start">104</text>
+    <text x="510" y="203">TIC</text><text x="530" y="203" fill="#8a96a3" text-anchor="start">105</text>
+    <text x="510" y="253">LIC</text><text x="530" y="253" fill="#8a96a3" text-anchor="start">103</text>
+    <text x="575" y="83">PIC</text><text x="575" y="107" fill="#8a96a3">111</text>
+    <text x="575" y="323">TIC</text><text x="575" y="347" fill="#8a96a3">112</text>
+    <text x="822" y="142">LIC</text><text x="846" y="142" fill="#8a96a3" text-anchor="start">109</text>
+  </g>
+  <!-- cascade link -->
+  <path d="M510 155 V185" stroke="#5fb3ff" stroke-width="1.3" stroke-dasharray="3 3"/>
+  <text x="516" y="174" font-size="8" fill="#5fb3ff">CAS</text>
+</svg>

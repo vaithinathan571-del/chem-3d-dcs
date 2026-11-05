@@ -1,0 +1,18 @@
+services:
+  dcs:
+    build: .
+    image: chem-3d-dcs:latest
+    ports:
+      - "8080:8080"
+    environment:
+      # Signing key for session tokens – set a long random value.
+      DCS_SECRET: ${DCS_SECRET:?Set DCS_SECRET in your environment or .env file}
+      # Optional: replace the demo accounts. JSON array of {username, password, role, displayName}.
+      # Roles: viewer | operator | engineer | instructor
+      DCS_USERS: ${DCS_USERS:-}
+    volumes:
+      - dcs-data:/data
+    restart: unless-stopped
+
+volumes:
+  dcs-data:

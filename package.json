@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "description": "CHEM-3D DCS – a 3D distributed control system and operator training simulator for a chemical process unit",
-  "license": "MIT",
   "type": "module",
   "workspaces": [
     "server",

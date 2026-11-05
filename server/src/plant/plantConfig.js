@@ -127,7 +127,7 @@ export const CONTROLLERS = [
   { tag: 'LIC-109', action: 'direct', kc: 2.0, ti: 600, td: 0, sp: 50, op: 33, mode: 'AUTO', output: { valve: 'LV-109' }, dev: [15, 'LOW'] },
   { tag: 'LIC-110', action: 'direct', kc: 2.0, ti: 600, td: 0, sp: 50, op: 53, mode: 'AUTO', output: { valve: 'LV-110' }, dev: [15, 'LOW'] },
   { tag: 'PIC-111', action: 'direct', kc: 4.0, ti: 120, td: 0, sp: 1.3, op: 50, mode: 'AUTO', output: { valve: 'PV-111' }, dev: [0.15, 'MEDIUM'] },
-  { tag: 'TIC-112', action: 'reverse', kc: 3.0, ti: 300, td: 0, sp: 154, op: 40, mode: 'AUTO', output: { valve: 'TV-112' }, dev: [4, 'MEDIUM'] },
+  { tag: 'TIC-112', action: 'reverse', kc: 3.0, ti: 300, td: 0, sp: 153, op: 40, mode: 'AUTO', output: { valve: 'TV-112' }, dev: [4, 'MEDIUM'] },
   {
     tag: 'HIC-115', description: 'Product export valve (manual loader)', units: '%', lo: 0, hi: 100, manualOnly: true,
     op: 67, mode: 'MAN', output: { valve: 'HV-115' },
