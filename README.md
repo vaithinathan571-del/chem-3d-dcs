@@ -2,6 +2,8 @@
 
 A web-based **3D distributed control system (DCS) and operator training simulator** for a chemical process unit. It pairs a first-principles dynamic plant model with the parts of a real control system: PID loops with cascade control, a safety instrumented system (SIS), ISA-18.2 alarm management, a historian, an audit trail and an instructor station. All of it runs behind a Three.js operator console that animates the plant live.
 
+**▶ Live demo: https://vaithinathan571-del.github.io/chem-3d-dcs/**. Sign in as `instructor` / `instructor`. The simulation runs entirely in your browser, and each tab gets its own plant.
+
 ![Process: A → B reactor with recovery column](docs/process.svg)
 
 ## Features
@@ -60,7 +62,7 @@ The repository includes a **standalone build** for static hosting. In it, the co
 
 1. In the repository on GitHub, open **Settings → Pages → Build and deployment** and set **Source: GitHub Actions** (one-time).
 2. Push to `main` (or run the workflow manually from the **Actions** tab).
-3. The site is published at `https://<owner>.github.io/<repo>/`, for this repo https://vaithinathan571-del.github.io/chem-3d-dcs/.
+3. The site is published at `https://<owner>.github.io/<repo>/`. This repository's demo is live at https://vaithinathan571-del.github.io/chem-3d-dcs/.
 
 Build or preview it locally:
 
