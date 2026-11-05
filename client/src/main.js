@@ -45,9 +45,12 @@ function showLogin(message) {
   const pass = h('input', { name: 'password', type: 'password', autocomplete: 'current-password', required: true, 'aria-label': 'Password', placeholder: 'Password' });
   const err = h('div.login-error', { role: 'alert' }, message ?? '');
   const submit = h('button.btn.primary.wide', { type: 'submit' }, 'Sign in');
+  let busy = false;
   const form = h('form.login-card', {
     onsubmit: async (e) => {
       e.preventDefault();
+      if (busy) return;
+      busy = true;
       submit.disabled = true;
       err.textContent = '';
       try {
@@ -56,6 +59,7 @@ function showLogin(message) {
       } catch (ex) {
         err.textContent = ex.message;
         submit.disabled = false;
+        busy = false;
       }
     },
   },
@@ -67,13 +71,17 @@ function showLogin(message) {
   submit,
   h('details.demo', { open: STANDALONE },
     h('summary', {}, 'Demo accounts'),
-    h('p.muted', {}, STANDALONE ? 'The password is the same as the username.' : 'Default accounts are active until DCS_USERS is configured on the server.'),
+    h('p.muted', {}, STANDALONE
+      ? 'Click an account to sign in with that role.'
+      : 'Click an account to sign in. Default accounts are active until DCS_USERS is configured on the server.'),
     h('div.demo-grid', {}, ['operator', 'engineer', 'instructor', 'viewer'].map((u) => h('button.btn.small', {
       type: 'button',
+      title: `Sign in as ${u}`,
       onclick: () => {
+        if (busy) return;
         user.value = u;
         pass.value = u;
-        submit.focus();
+        form.requestSubmit();
       },
     }, u)))));
   app.append(h('div.login', {}, form));

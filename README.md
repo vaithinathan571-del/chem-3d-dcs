@@ -2,7 +2,7 @@
 
 A web-based **3D distributed control system (DCS) and operator training simulator** for a chemical process unit. It pairs a first-principles dynamic plant model with the parts of a real control system: PID loops with cascade control, a safety instrumented system (SIS), ISA-18.2 alarm management, a historian, an audit trail and an instructor station. All of it runs behind a Three.js operator console that animates the plant live.
 
-**▶ Live demo: https://vaithinathan571-del.github.io/chem-3d-dcs/**. Sign in as `instructor` / `instructor`. The simulation runs entirely in your browser, and each tab gets its own plant.
+**▶ Live demo: https://vaithinathan571-del.github.io/chem-3d-dcs/**. Click **instructor** on the sign-in page. The simulation runs entirely in your browser, and each tab gets its own plant.
 
 ![Process: A → B reactor with recovery column](docs/process.svg)
 
@@ -45,7 +45,7 @@ npm run build
 DCS_SECRET=change-me npm start
 ```
 
-Sign in with one of the demo accounts. The password is the same as the username.
+Sign in by clicking a demo account on the login page, or type its name; the password is the same as the username.
 
 | User | Role | Can |
 | --- | --- | --- |
