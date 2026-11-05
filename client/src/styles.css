@@ -122,6 +122,8 @@ input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px s
 .login-brand p { margin: 0; color: var(--muted); }
 .login-error { color: var(--p1); min-height: 1.2em; }
 .demo summary { cursor: pointer; color: var(--muted); }
+.standalone-note { margin: 0; padding: 8px 10px; border: 1px solid #2d4a6a; background: #13202d; border-radius: 6px; color: #b9d3ee; font-size: 12px; }
+.badge.standalone { border-color: var(--accent); color: var(--accent); }
 .demo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .demo p { margin: 8px 0; font-size: 12px; }
 

@@ -27,7 +27,7 @@ Requirements: **Node.js ≥ 20.19** (22 LTS recommended).
 npm install
 ```
 
-Development (server with auto-reload, plus the Vite dev server on http://localhost:5173):
+Development (server with auto-reload, plus the Vite dev server on http://localhost:5173). Use `npm run dev:standalone` instead to run without the server:
 
 ```bash
 npm run dev
@@ -53,6 +53,26 @@ Sign in with one of the demo accounts. The password is the same as the username.
 | `instructor` | instructor | Everything, plus simulation control, malfunctions and snapshots |
 
 > Configure real accounts with `DCS_USERS` before exposing the server to anyone (see below).
+
+### Live demo on GitHub Pages
+
+The repository includes a **standalone build** for static hosting. In it, the complete DCS runtime (process model, control, SIS, alarms, historian) runs in a Web Worker inside the browser, so no server is needed. [.github/workflows/pages.yml](.github/workflows/pages.yml) tests, builds and publishes it on every push to `main`.
+
+1. In the repository on GitHub, open **Settings → Pages → Build and deployment** and set **Source: GitHub Actions** (one-time).
+2. Push to `main` (or run the workflow manually from the **Actions** tab).
+3. The site is published at `https://<owner>.github.io/<repo>/`, for this repo https://vaithinathan571-del.github.io/chem-3d-dcs/.
+
+Build or preview it locally:
+
+```bash
+npm run build:pages
+```
+
+```bash
+npm run preview:pages -w client
+```
+
+The output is in `client/dist-pages/` with relative asset paths, so it works under any sub-path. In the standalone demo, sign-in only selects a role, and each browser tab runs its own private simulation. Snapshots last until the tab is closed.
 
 ### Docker
 
@@ -89,7 +109,7 @@ Environment variables are read at start-up. With Node 22 you can keep them in a 
 npm test
 ```
 
-This runs 37 unit and integration tests (PID, alarms, process model, SIS, historian, REST/WebSocket API, auth).
+This runs 39 unit and integration tests (PID, alarms, process model, SIS, historian, snapshots, REST/WebSocket API, auth).
 
 ```bash
 npm run build
@@ -147,7 +167,8 @@ server/                 Node.js DCS server (no build step, ESM)
 client/                 Vite + Three.js operator console (vanilla JS)
   src/scene/            3D plant layout, procedural equipment models, scene controller
   src/ui/               faceplates, alarms, trends, events, SIS, instructor panels
-  src/net/              REST/WebSocket client
+  src/net/              REST/WebSocket client and the standalone (Web Worker) client
+  src/local/            Web Worker hosting the DCS runtime for the standalone build
 scripts/                dev runner, e2e smoke test
 docs/                   architecture notes and process diagram
 ```

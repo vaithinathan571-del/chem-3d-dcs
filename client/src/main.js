@@ -15,7 +15,10 @@ import { createSis } from './ui/sis.js';
 import { createInstructor } from './ui/instructor.js';
 
 const app = document.getElementById('app');
-const client = new DcsClient();
+/** Standalone builds (GitHub Pages) run the DCS runtime in a Web Worker instead of on a server. */
+const STANDALONE = import.meta.env.VITE_STANDALONE === '1';
+const client = STANDALONE ? new (await import('./net/localClient.js')).LocalDcsClient() : new DcsClient();
+const ICON = `${import.meta.env.BASE_URL}favicon.svg`;
 const horn = new Horn();
 
 const pref = {
@@ -56,14 +59,15 @@ function showLogin(message) {
       }
     },
   },
-  h('div.login-brand', {}, h('img', { src: '/favicon.svg', alt: '', width: 40, height: 40 }), h('div', {}, h('h1', {}, 'CHEM-3D DCS'), h('p', {}, 'Unit 100 operator console'))),
+  h('div.login-brand', {}, h('img', { src: ICON, alt: '', width: 40, height: 40 }), h('div', {}, h('h1', {}, 'CHEM-3D DCS'), h('p', {}, 'Unit 100 operator console'))),
+  STANDALONE ? h('p.standalone-note', {}, 'Standalone demo – the plant simulation runs entirely in your browser. Sign in with a demo account to choose your role.') : null,
   h('label', {}, 'Username', user),
   h('label', {}, 'Password', pass),
   err,
   submit,
-  h('details.demo', {},
+  h('details.demo', { open: STANDALONE },
     h('summary', {}, 'Demo accounts'),
-    h('p.muted', {}, 'Default accounts are active until DCS_USERS is configured on the server.'),
+    h('p.muted', {}, STANDALONE ? 'The password is the same as the username.' : 'Default accounts are active until DCS_USERS is configured on the server.'),
     h('div.demo-grid', {}, ['operator', 'engineer', 'instructor', 'viewer'].map((u) => h('button.btn.small', {
       type: 'button',
       onclick: () => {
@@ -99,9 +103,10 @@ function buildShell() {
   const conn = h('span.conn', { title: 'Connection' });
   const userEl = h('span.user');
   const topbar = h('header.topbar', {},
-    h('div.brand', {}, h('img', { src: '/favicon.svg', alt: '', width: 22, height: 22 }), h('span', {}, 'CHEM-3D DCS')),
+    h('div.brand', {}, h('img', { src: ICON, alt: '', width: 22, height: 22 }), h('span', {}, 'CHEM-3D DCS')),
     h('div.plant-name'),
-    h('div.top-status', {}, clock, simTime, speed, frozen),
+    h('div.top-status', {}, clock, simTime, speed, frozen,
+      STANDALONE ? h('span.badge.standalone', { title: 'Standalone demo – the simulation runs in this browser tab' }, 'BROWSER SIM') : null),
     h('div.top-right', {}, conn, userEl,
       h('button.btn.small', { onclick: () => { client.logout(); location.reload(); } }, 'Sign out')));
 

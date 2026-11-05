@@ -8,24 +8,9 @@
  */
 import crypto from 'node:crypto';
 
-export const ROLES = ['viewer', 'operator', 'engineer', 'instructor'];
+import { ROLES, ROLE_PERMISSIONS, DEFAULT_USERS, can, publicUser } from './roles.js';
 
-const OPERATOR = ['operate', 'ack', 'shelve', 'ilReset', 'esd'];
-const ENGINEER = [...OPERATOR, 'tune', 'alarmConfig', 'ilBypass'];
-
-export const ROLE_PERMISSIONS = {
-  viewer: [],
-  operator: OPERATOR,
-  engineer: ENGINEER,
-  instructor: [...ENGINEER, 'sim', 'malfunction', 'snapshot'],
-};
-
-export const DEFAULT_USERS = [
-  { username: 'operator', password: 'operator', role: 'operator', displayName: 'Panel Operator' },
-  { username: 'engineer', password: 'engineer', role: 'engineer', displayName: 'Control Engineer' },
-  { username: 'instructor', password: 'instructor', role: 'instructor', displayName: 'Training Instructor' },
-  { username: 'viewer', password: 'viewer', role: 'viewer', displayName: 'Read-only Viewer' },
-];
+export { ROLES, ROLE_PERMISSIONS, DEFAULT_USERS };
 
 const b64url = (buf) => Buffer.from(buf).toString('base64url');
 
@@ -62,7 +47,7 @@ export class AuthService {
   }
 
   publicUser(u) {
-    return { username: u.username, role: u.role, displayName: u.displayName, permissions: ROLE_PERMISSIONS[u.role] };
+    return publicUser(u);
   }
 
   sign(payload) {
@@ -92,6 +77,6 @@ export class AuthService {
   }
 
   static can(user, permission) {
-    return !!user && ROLE_PERMISSIONS[user.role]?.includes(permission);
+    return can(user, permission);
   }
 }

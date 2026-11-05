@@ -1,39 +1,23 @@
 /**
  * Snapshot (initial-condition) store. Snapshots capture the complete dynamic
  * state of the plant so an instructor can save and restore training
- * scenarios. They are kept in memory and, when a data directory is
- * configured, persisted as JSON files.
+ * scenarios. The store is platform independent; durable storage is provided
+ * by an optional persistence adapter ({load(), save(snap), remove(id)}), e.g.
+ * `createFilePersistence` on the server.
  */
-import fs from 'node:fs';
-import path from 'node:path';
-import crypto from 'node:crypto';
 
-const SAFE_ID = /^[a-z0-9-]{1,64}$/;
+function randomId() {
+  const bytes = new Uint8Array(5);
+  globalThis.crypto.getRandomValues(bytes);
+  return `snap-${[...bytes].map((b) => b.toString(16).padStart(2, '0')).join('')}`;
+}
 
 export class SnapshotStore {
-  constructor({ dir = null, max = 50 } = {}) {
-    this.dir = dir;
+  constructor({ persistence = null, max = 50 } = {}) {
+    this.persistence = persistence;
     this.max = max;
     this.items = new Map();
-    if (dir) this.loadFromDisk();
-  }
-
-  loadFromDisk() {
-    try {
-      fs.mkdirSync(this.dir, { recursive: true });
-      for (const f of fs.readdirSync(this.dir)) {
-        if (!f.endsWith('.json')) continue;
-        try {
-          const snap = JSON.parse(fs.readFileSync(path.join(this.dir, f), 'utf8'));
-          if (snap?.id && SAFE_ID.test(snap.id) && snap.data) this.items.set(snap.id, snap);
-        } catch {
-          // ignore corrupt snapshot files
-        }
-      }
-    } catch (err) {
-      console.warn(`[snapshots] cannot use directory ${this.dir}: ${err.message}`);
-      this.dir = null;
-    }
+    for (const snap of persistence?.load() ?? []) this.items.set(snap.id, snap);
   }
 
   list() {
@@ -50,7 +34,7 @@ export class SnapshotStore {
     const userSnapshots = [...this.items.values()].filter((s) => !s.builtin);
     if (!builtin && userSnapshots.length >= this.max) throw new Error(`Snapshot limit (${this.max}) reached – delete one first`);
     const snap = {
-      id: id ?? `snap-${crypto.randomBytes(5).toString('hex')}`,
+      id: id ?? randomId(),
       name: String(name || 'Snapshot').slice(0, 80),
       createdAt: Date.now(),
       createdBy: user ?? 'system',
@@ -59,9 +43,7 @@ export class SnapshotStore {
       data,
     };
     this.items.set(snap.id, snap);
-    if (this.dir && !builtin) {
-      fs.writeFileSync(path.join(this.dir, `${snap.id}.json`), JSON.stringify(snap));
-    }
+    if (!builtin) this.persistence?.save(snap);
     return snap;
   }
 
@@ -70,13 +52,7 @@ export class SnapshotStore {
     if (!snap) return `Unknown snapshot ${id}`;
     if (snap.builtin) return 'Built-in snapshots cannot be deleted';
     this.items.delete(id);
-    if (this.dir && SAFE_ID.test(id)) {
-      try {
-        fs.unlinkSync(path.join(this.dir, `${id}.json`));
-      } catch {
-        // already gone
-      }
-    }
+    this.persistence?.remove(id);
     return null;
   }
 }

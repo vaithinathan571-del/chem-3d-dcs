@@ -2,7 +2,7 @@
   "name": "chem-3d-dcs",
   "version": "1.0.0",
   "private": true,
-  "description": "CHEM-3D DCS – a 3D distributed control system and operator training simulator for a chemical process unit",
+  "description": "CHEM-3D DCS \u2013 a 3D distributed control system and operator training simulator for a chemical process unit",
   "type": "module",
   "workspaces": [
     "server",
@@ -10,7 +10,9 @@
   ],
   "scripts": {
     "dev": "node scripts/dev.js",
+    "dev:standalone": "npm run dev:standalone -w client",
     "build": "npm run build -w client",
+    "build:pages": "npm run build:pages -w client",
     "start": "npm start -w server",
     "test": "npm test -w server",
     "test:e2e": "node scripts/e2e-smoke.js"

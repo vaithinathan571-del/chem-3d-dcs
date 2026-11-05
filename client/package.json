@@ -6,8 +6,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:standalone": "vite --mode pages",
     "build": "vite build",
-    "preview": "vite preview"
+    "build:pages": "vite build --mode pages",
+    "preview": "vite preview",
+    "preview:pages": "vite preview --mode pages"
   },
   "dependencies": {
     "three": "0.186.1"

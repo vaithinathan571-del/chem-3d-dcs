@@ -16,7 +16,7 @@ import { EventLog } from './events/eventLog.js';
 import { Historian } from './historian/historian.js';
 import { MalfunctionManager } from './instructor/malfunctions.js';
 import { SnapshotStore } from './instructor/snapshots.js';
-import { AuthService, ROLE_PERMISSIONS } from './auth/auth.js';
+import { ROLE_PERMISSIONS, can } from './auth/roles.js';
 
 export const SIM_SPEEDS = [0.5, 1, 2, 5, 10, 20, 50];
 const BASE_DT = 0.1;
@@ -52,7 +52,7 @@ const fmt = (v, d = 2) => (Number.isFinite(v) ? Number(v).toFixed(d) : String(v)
 
 export class PlantRuntime {
   /**
-   * @param {{seed?: number, snapshotDir?: string|null, historianHours?: number,
+   * @param {{seed?: number, snapshotPersistence?: object|null, historianHours?: number,
    *          prerunSeconds?: number, startEpoch?: number}} opts
    */
   constructor(opts = {}) {
@@ -92,7 +92,7 @@ export class PlantRuntime {
     this.sis = new InterlockSystem(INTERLOCKS, { motors: this.motors, valves: this.valves, control: this.control }, log);
     this.malfunctions = new MalfunctionManager(MALFUNCTIONS, { motors: this.motors, valves: this.valves, transmitters: this.transmitters });
     this.historian = new Historian({ capacity: Math.round((opts.historianHours ?? 4) * 3600), interval: 1 });
-    this.snapshots = new SnapshotStore({ dir: opts.snapshotDir ?? null });
+    this.snapshots = new SnapshotStore({ persistence: opts.snapshotPersistence ?? null });
 
     this.defineAlarms();
     for (const p of ANALOG_POINTS) this.historian.register(`${p.tag}.PV`);
@@ -328,7 +328,7 @@ export class PlantRuntime {
   executeCommand(user, action, params = {}) {
     const perm = COMMANDS[action];
     if (!perm) return { ok: false, message: `Unknown command "${action}"` };
-    if (!AuthService.can(user, perm)) return { ok: false, message: `Permission denied – role "${user?.role ?? 'none'}" cannot ${action}` };
+    if (!can(user, perm)) return { ok: false, message: `Permission denied – role "${user?.role ?? 'none'}" cannot ${action}` };
     try {
       const result = this.dispatch(user, action, params ?? {});
       if (typeof result === 'string') return { ok: false, message: result };

@@ -1,5 +1,6 @@
 node_modules/
 client/dist/
+client/dist-pages/
 data/
 *.log
 .DS_Store

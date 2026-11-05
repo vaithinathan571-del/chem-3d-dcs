@@ -7,6 +7,7 @@ import { loadConfig } from './config.js';
 import { PlantRuntime } from './runtime.js';
 import { AuthService } from './auth/auth.js';
 import { createDcsServer } from './api/httpServer.js';
+import { createFilePersistence } from './instructor/fileSnapshotPersistence.js';
 
 const cfg = loadConfig();
 
@@ -23,7 +24,7 @@ const runtime = new PlantRuntime({
   seed: cfg.seed,
   prerunSeconds: cfg.prerunSeconds,
   historianHours: cfg.historianHours,
-  snapshotDir: path.join(cfg.dataDir, 'snapshots'),
+  snapshotPersistence: createFilePersistence(path.join(cfg.dataDir, 'snapshots')),
 }).initialise();
 console.log(`[sim] Ready in ${Math.round(performance.now() - t0)} ms`);
 runtime.start();
