@@ -17,6 +17,8 @@ import { Historian } from './historian/historian.js';
 import { MalfunctionManager } from './instructor/malfunctions.js';
 import { SnapshotStore } from './instructor/snapshots.js';
 import { ROLE_PERMISSIONS, can } from './auth/roles.js';
+import { TrainingManager } from './training/trainingManager.js';
+import { SCENARIOS } from './training/scenarios.js';
 
 export const SIM_SPEEDS = [0.5, 1, 2, 5, 10, 20, 50];
 const BASE_DT = 0.1;
@@ -46,6 +48,8 @@ export const COMMANDS = {
   snapshotSave: 'snapshot',
   snapshotLoad: 'snapshot',
   snapshotDelete: 'snapshot',
+  scenarioStart: 'train',
+  scenarioAbort: 'train',
 };
 
 const fmt = (v, d = 2) => (Number.isFinite(v) ? Number(v).toFixed(d) : String(v));
@@ -93,6 +97,7 @@ export class PlantRuntime {
     this.malfunctions = new MalfunctionManager(MALFUNCTIONS, { motors: this.motors, valves: this.valves, transmitters: this.transmitters });
     this.historian = new Historian({ capacity: Math.round((opts.historianHours ?? 4) * 3600), interval: 1 });
     this.snapshots = new SnapshotStore({ persistence: opts.snapshotPersistence ?? null });
+    this.trainer = new TrainingManager(this, opts.scenarios ?? SCENARIOS);
 
     this.defineAlarms();
     for (const p of ANALOG_POINTS) this.historian.register(`${p.tag}.PV`);
@@ -224,7 +229,10 @@ export class PlantRuntime {
       this.alarmTimer = 0;
       if (this.recording) this.evaluateAlarms();
     }
-    if (this.recording) this.historian.maybeRecord(this.now, (id) => this.seriesValue(id));
+    if (this.recording) {
+      this.historian.maybeRecord(this.now, (id) => this.seriesValue(id));
+      this.trainer.tick(dt);
+    }
   }
 
   seriesValue(id) {
@@ -414,8 +422,11 @@ export class PlantRuntime {
         return this.alarms.setEnabled(String(p.id), p.enabled, who);
       case 'ilReset':
         return this.sis.reset(String(p.id), who);
-      case 'ilBypass':
-        return this.sis.bypass(String(p.id), who, !!p.bypass);
+      case 'ilBypass': {
+        const err = this.sis.bypass(String(p.id), who, !!p.bypass);
+        if (!err && p.bypass) this.trainer.violation(`${p.id} bypassed by ${who}`);
+        return err;
+      }
       case 'esd':
         return this.sis.manualTrip(String(p.id ?? 'ESD-1'), who, now);
       case 'simRun':
@@ -434,6 +445,7 @@ export class PlantRuntime {
         return null;
       }
       case 'malfunction': {
+        if (this.trainer.active) this.trainer.abort(`Malfunction changed manually by ${who} during the exercise`);
         const id = String(p.id);
         const def = MALFUNCTIONS.find((m) => m.id === id);
         const err = p.active ? this.malfunctions.activate(id, now) : this.malfunctions.clear(id);
@@ -449,6 +461,7 @@ export class PlantRuntime {
       case 'snapshotLoad': {
         const snap = this.snapshots.get(String(p.id));
         if (!snap) return `Unknown snapshot ${p.id}`;
+        if (this.trainer.active) this.trainer.abort(`Snapshot loaded by ${who} during the exercise`);
         this.restoreState(snap.data);
         log('INSTRUCTOR', `Snapshot "${snap.name}" loaded – plant state restored`);
         return null;
@@ -460,6 +473,10 @@ export class PlantRuntime {
         log('INSTRUCTOR', `Snapshot "${snap.name}" deleted`);
         return null;
       }
+      case 'scenarioStart':
+        return this.trainer.start(String(p.id), user);
+      case 'scenarioAbort':
+        return this.trainer.abort(`Aborted by ${who}`, user);
       default:
         return `Unhandled command ${action}`;
     }
@@ -495,6 +512,7 @@ export class PlantRuntime {
       roles: ROLE_PERMISSIONS,
       commands: COMMANDS,
       simSpeeds: SIM_SPEEDS,
+      scenarios: this.trainer.catalog(),
       historian: { series: this.historian.ids, hours: this.historian.capacity / 3600 },
     };
   }
@@ -560,6 +578,7 @@ export class PlantRuntime {
       kpis,
       visual,
       utilities: { cwTemp: this.utilities.cwTemp, steamPressure: this.utilities.steamPressure, cwAvail: this.utilities.cwAvail },
+      training: this.trainer.status(),
       eventSeq: this.events.seq,
     };
   }

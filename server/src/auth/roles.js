@@ -4,7 +4,7 @@
  */
 export const ROLES = ['viewer', 'operator', 'engineer', 'instructor'];
 
-const OPERATOR = ['operate', 'ack', 'shelve', 'ilReset', 'esd'];
+const OPERATOR = ['operate', 'ack', 'shelve', 'ilReset', 'esd', 'train'];
 const ENGINEER = [...OPERATOR, 'tune', 'alarmConfig', 'ilBypass'];
 
 export const ROLE_PERMISSIONS = {

@@ -16,6 +16,7 @@ A web-based **3D distributed control system (DCS) and operator training simulato
 | **Safety (SIS)** | 7 latching safety functions plus a manual ESD pushbutton. Each reads an independent sensor, records first-out, resets only once the condition clears, and supports an audited engineer bypass. Tripped functions force valves and inhibit motor starts. |
 | **Alarms** | ISA-18.2 state model (UNACK / ACKED / RTN-UNACK / SHELVED). Limit alarms have deadband and on-delay. Also deviation, BAD-PV, DCS-vs-SIS discrepancy, motor trip, PSV lift, overflow and alarm-flood detection. Alarms can be acknowledged and shelved, and an audible horn sounds. |
 | **Historian & journal** | 1-second historian (4 h by default) with decimated queries. A sequence-of-events journal records every alarm, operator action, SIS action and instructor intervention, and exports to CSV. |
+| **Training exercises** | Five scored exercises: reactor temperature change, agitator trip, cooling-water failure, feed loss and silent transmitter drift. Each has a briefing, upsets on a timeline (hidden from the trainee until symptoms appear), field messages, hints, live objective tracking and a graded debrief (A–D) with a downloadable report. |
 | **Instructor station** | Run/freeze, 0.5×–50× simulation speed, 15 malfunctions (utilities, equipment, process, instruments), and snapshots that can be saved, loaded and persisted. |
 | **3D operator console** | Procedural 3D plant: live vessel levels coloured by composition, column tray temperature profile, rotating agitator and pumps, animated pipe flows, valve positions, hot-reactor glow and flashing alarm highlighting. Floating data cards, camera presets and click-to-faceplate navigation. |
 | **2D displays** | Faceplates (loop, indicator, motor, equipment), overview group display with KPIs, alarm summary, multi-pen trends, event journal, SIS matrix, instructor panel. |
@@ -103,7 +104,8 @@ Environment variables are read at start-up. With Node 22 you can keep them in a 
 - **3D view.** Left-drag to orbit, right-drag to pan, scroll to zoom. Click equipment, a valve or a data-card row to open its faceplate. Double-click (or press `F`) to fly to the selection, and press `Esc` to deselect. Equipment with unacknowledged alarms flashes in the alarm's priority colour.
 - **Faceplates.** Set the mode (MAN/AUTO/CAS), enter or nudge SP and OP, tune Kc/Ti/Td (engineer role) and edit alarm limits (engineer role). The 📈 button sends the loop to the trend display.
 - **Alarm banner.** Shows the three most important alarms and the counts per priority. Use ACK / ACK ALL to acknowledge and the bell to mute the horn.
-- **Training scenario.** As `instructor`, load the *Normal operation* snapshot and activate **MF-01 Cooling-water supply failure**. The column pressure trips IL-005 within minutes. The reactor then heats towards a runaway until IL-001 trips the feed, unless the operator cuts the feed rate first.
+- **Training exercises.** Open the **Training** tab, pick an exercise and read its briefing, then start it. The plant resets to normal operation, and the exercise injects its upsets on a timeline while you operate. The objectives panel shows your score building up live. At the end a debrief opens with your grade, a breakdown per objective, alarm-response statistics and a timeline, and you can download it as a report. Operators, engineers and instructors can all run exercises; instructors can also fast-forward them from the Instructor tab. Loading a snapshot or changing a malfunction during an exercise aborts it, and bypassing an SIS function voids the "no trip" objective.
+- **Free play.** As `instructor`, load the *Normal operation* snapshot and activate **MF-01 Cooling-water supply failure**. The column pressure trips IL-005 within minutes. The reactor then heats towards a runaway until IL-001 trips the feed, unless the operator cuts the feed rate first.
 
 ## Testing
 
@@ -111,7 +113,7 @@ Environment variables are read at start-up. With Node 22 you can keep them in a 
 npm test
 ```
 
-This runs 39 unit and integration tests (PID, alarms, process model, SIS, historian, snapshots, REST/WebSocket API, auth).
+This runs 44 unit and integration tests (PID, alarms, process model, SIS, historian, snapshots, training, REST/WebSocket API, auth). The training tests replay exercises with a scripted operator: a competent response must earn an A, and doing nothing must fail.
 
 ```bash
 npm run build
@@ -141,7 +143,7 @@ REST endpoints need `Authorization: Bearer <token>`, except health and login.
 
 WebSocket `/ws?token=…`. The server sends `hello` (config, state and recent events), then `state` every 500 ms with any new events. It also sends `result`, `snapshots` and `alarmConfig` messages. Clients send `{type: "command", id, action, params}`.
 
-Commands: `setSP`, `setOP`, `setMode`, `setTuning`, `motorStart`, `motorStop`, `ackAlarm`, `ackAll`, `shelveAlarm`, `unshelveAlarm`, `setAlarmLimit`, `enableAlarm`, `ilReset`, `ilBypass`, `esd`, `simRun`, `simFreeze`, `simSpeed`, `malfunction`, `snapshotSave`, `snapshotLoad`, `snapshotDelete`.
+Commands: `setSP`, `setOP`, `setMode`, `setTuning`, `motorStart`, `motorStop`, `ackAlarm`, `ackAll`, `shelveAlarm`, `unshelveAlarm`, `setAlarmLimit`, `enableAlarm`, `ilReset`, `ilBypass`, `esd`, `simRun`, `simFreeze`, `simSpeed`, `malfunction`, `snapshotSave`, `snapshotLoad`, `snapshotDelete`, `scenarioStart`, `scenarioAbort`.
 
 ```bash
 TOKEN=$(curl -s localhost:8080/api/login -d '{"username":"operator","password":"operator"}' | jq -r .token)
@@ -162,6 +164,7 @@ server/                 Node.js DCS server (no build step, ESM)
   src/historian/        ring-buffer historian
   src/events/           sequence-of-events journal
   src/instructor/       malfunctions and snapshots
+  src/training/         training scenarios and the scoring engine
   src/auth/             users, roles, tokens
   src/api/              HTTP, static files, WebSocket
   src/runtime.js        real-time executive tying it all together

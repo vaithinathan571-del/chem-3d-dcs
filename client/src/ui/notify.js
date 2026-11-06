@@ -53,6 +53,33 @@ export function confirmDialog({ title, message, confirmLabel = 'Confirm', danger
   });
 }
 
+/**
+ * Generic modal dialog. `actions` is a list of {label, kind?, onClick?(close)};
+ * an action without onClick just closes the dialog.
+ */
+export function modal({ title, body, actions = [{ label: 'Close' }], wide = false }) {
+  const close = () => {
+    overlay.remove();
+    document.removeEventListener('keydown', onKey);
+  };
+  const onKey = (e) => {
+    if (e.key === 'Escape') close();
+  };
+  const buttons = actions.map((a) => h(`button.btn${a.kind ? `.${a.kind}` : ''}`, { onclick: () => (a.onClick ? a.onClick(close) : close()) }, a.label));
+  const overlay = h(
+    'div.modal-overlay',
+    { onclick: (e) => e.target === overlay && close() },
+    h(`div.modal${wide ? '.wide' : ''}`, { role: 'dialog', 'aria-modal': 'true', 'aria-label': title },
+      h('h3', {}, title),
+      body,
+      h('div.modal-actions', {}, buttons)),
+  );
+  document.body.append(overlay);
+  document.addEventListener('keydown', onKey);
+  buttons.at(-1)?.focus();
+  return { close };
+}
+
 /** Alarm horn using WebAudio – a short two-tone beep per new urgent alarm. */
 export class Horn {
   constructor() {

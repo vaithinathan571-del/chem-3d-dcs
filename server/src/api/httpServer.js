@@ -261,6 +261,7 @@ export function createDcsServer({ runtime, auth, staticDir = null, broadcastMs =
       state: runtime.liveState(),
       events: runtime.events.query({ limit: 300 }),
       snapshots: runtime.snapshots.list(),
+      trainingResults: runtime.trainer.results,
     });
     ws.on('message', (raw) => {
       let msg;
@@ -284,11 +285,16 @@ export function createDcsServer({ runtime, auth, staticDir = null, broadcastMs =
   });
 
   let lastSeq = runtime.events.seq;
+  let lastTraining = runtime.trainer.version;
   const broadcastTimer = setInterval(() => {
     const events = runtime.events.since(lastSeq);
     lastSeq = runtime.events.seq;
+    const trainingChanged = runtime.trainer.version !== lastTraining;
+    lastTraining = runtime.trainer.version;
     if (wss.clients.size === 0) return;
-    broadcast({ type: 'state', state: runtime.liveState(), events });
+    const msg = { type: 'state', state: runtime.liveState(), events };
+    if (trainingChanged) msg.trainingResults = runtime.trainer.results;
+    broadcast(msg);
   }, broadcastMs);
 
   const heartbeat = setInterval(() => {

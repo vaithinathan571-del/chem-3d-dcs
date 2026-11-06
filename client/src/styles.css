@@ -564,8 +564,62 @@ tr[data-cat='INSTRUCTOR'] td { color: #c9b6ff; }
 .mf.active { background: rgba(255, 159, 26, 0.12); box-shadow: inset 3px 0 0 var(--p2); }
 .locked { color: var(--muted); padding: 20px; }
 
+/* training */
+.training { display: grid; grid-template-columns: minmax(280px, 2fr) minmax(360px, 3fr); gap: 16px; }
+.training h3 { margin: 4px 0 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.training h4, .modal h4 { margin: 12px 0 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.tr-catalog { display: grid; gap: 8px; }
+.sc-card { background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; }
+.sc-card p { margin: 4px 0 6px; }
+.sc-head, .sc-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.badge.diff-beginner { color: var(--ok); border-color: var(--ok); }
+.badge.diff-intermediate { color: var(--p3); border-color: var(--p3); }
+.badge.diff-advanced { color: var(--p2); border-color: var(--p2); }
+.run-panel { background: var(--panel-2); border: 1px solid #2d4a6a; border-radius: 6px; padding: 10px 12px; margin-bottom: 12px; }
+.run-head { display: flex; justify-content: space-between; gap: 12px; }
+.run-score { text-align: right; }
+.live-score { font: 700 26px var(--mono); color: var(--accent); }
+.progress { height: 6px; background: #0f1317; border-radius: 3px; overflow: hidden; margin: 8px 0 4px; }
+.progress-fill { height: 100%; background: var(--accent); transition: width 0.4s; }
+.run-time { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.mono { font-family: var(--mono); }
+table.criteria td { vertical-align: top; }
+table.criteria th { position: static; }
+.crit-icon { width: 20px; font-weight: 700; text-align: center; }
+.crit-pass .crit-icon { color: var(--ok); }
+.crit-fail .crit-icon { color: var(--p1); }
+.crit-pending .crit-icon { color: var(--p3); }
+.tl-wrap { max-height: 170px; overflow: auto; }
+.tl-wrap.tall { max-height: 260px; }
+ol.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; font-size: 12px; }
+ol.timeline li { display: grid; grid-template-columns: 46px 70px 1fr; gap: 6px; padding: 2px 4px; border-left: 3px solid #3a4450; }
+.tl-time { font-family: var(--mono); color: var(--muted); }
+.tl-kind { color: var(--muted); }
+li.tl-upset { border-left-color: var(--p2); }
+li.tl-message { border-left-color: var(--accent); }
+li.tl-hint { border-left-color: #b98cff; }
+li.tl-trip, li.tl-violation { border-left-color: var(--p1); }
+li.tl-trip .tl-text, li.tl-violation .tl-text { color: #ffb4b4; }
+.grade { display: inline-block; min-width: 22px; text-align: center; border-radius: 4px; font-weight: 700; color: #111; padding: 0 5px; }
+.grade-A { background: var(--ok); }
+.grade-B { background: #8fd16b; }
+.grade-C { background: var(--p3); }
+.grade-D { background: var(--p2); }
+.debrief-score { display: flex; gap: 16px; align-items: center; margin: 8px 0 12px; }
+.grade-big { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; font: 700 30px var(--mono); color: #111; }
+.grade-big.aborted { background: var(--panel-3); color: var(--muted); }
+.score-num { font: 700 22px var(--mono); }
+.debrief-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 4px; }
+.dstat { background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; }
+.dstat-val { font: 700 18px var(--mono); }
+.briefing p { color: var(--text); }
+ul.objectives { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+ul.objectives li { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid #222930; padding: 3px 0; }
+.training-badge { cursor: pointer; border-color: var(--accent); color: var(--accent); background: #13202d; }
+.toast.hint { border-left-color: #b98cff; }
+
 /* ---------------------------------------------------------------- toasts & modal */
-.toasts { position: fixed; right: 16px; bottom: 16px; display: grid; gap: 8px; z-index: 100; max-width: min(420px, calc(100vw - 32px)); }
+.toasts { position: fixed; top: 92px; left: 50%; transform: translateX(-50%); display: grid; gap: 8px; z-index: 100; width: min(520px, calc(100vw - 32px)); pointer-events: none; }
 .toast {
   background: var(--panel-3);
   border: 1px solid var(--border);
@@ -577,9 +631,10 @@ tr[data-cat='INSTRUCTOR'] td { color: #c9b6ff; }
 }
 .toast.ok { border-left-color: var(--ok); }
 .toast.error { border-left-color: var(--p1); }
-.toast.out { opacity: 0; transform: translateY(8px); }
+.toast.out { opacity: 0; transform: translateY(-8px); }
 .modal-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); display: grid; place-items: center; z-index: 200; padding: 16px; }
-.modal { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; width: min(440px, 100%); }
+.modal { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; width: min(480px, 100%); max-height: calc(100vh - 32px); overflow: auto; }
+.modal.wide { width: min(760px, 100%); }
 .modal h3 { margin: 0 0 8px; }
 .modal p { color: var(--muted); }
 .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
@@ -587,7 +642,7 @@ tr[data-cat='INSTRUCTOR'] td { color: #c9b6ff; }
 /* ---------------------------------------------------------------- responsive */
 @media (max-width: 1100px) {
   .main { grid-template-columns: minmax(0, 1fr) 320px; }
-  .instructor { grid-template-columns: 1fr; }
+  .instructor, .training { grid-template-columns: 1fr; }
   .overview-tables { grid-template-columns: 1fr; }
 }
 @media (max-width: 760px) {
@@ -608,4 +663,7 @@ tr[data-cat='INSTRUCTOR'] td { color: #c9b6ff; }
   .card3d { min-width: 120px; font-size: 10px; }
   .card3d-row { grid-template-columns: 54px 1fr auto; }
   .demo-grid { grid-template-columns: repeat(2, 1fr); }
+  .debrief-stats { grid-template-columns: repeat(2, 1fr); }
+  ol.timeline li { grid-template-columns: 42px 1fr; }
+  .tl-kind { display: none; }
 }

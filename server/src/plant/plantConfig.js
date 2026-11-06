@@ -122,7 +122,7 @@ export const CONTROLLERS = [
     tag: 'TIC-104', action: 'reverse', kc: 4.0, ti: 500, td: 0, sp: 85, op: 61, mode: 'AUTO',
     output: { cascade: 'TIC-105', lo: 20, hi: 100 }, dev: [4, 'HIGH'],
   },
-  { tag: 'TIC-105', action: 'direct', kc: 2.5, ti: 120, td: 0, sp: 72, op: 35, mode: 'CAS', output: { valve: 'TV-105' }, dev: [6, 'LOW'] },
+  { tag: 'TIC-105', action: 'direct', kc: 6, ti: 60, td: 0, sp: 72, op: 35, mode: 'CAS', output: { valve: 'TV-105' }, dev: [6, 'LOW'] },
   { tag: 'FIC-108', action: 'reverse', kc: 0.4, ti: 8, td: 0, sp: 6, op: 40, mode: 'AUTO', output: { valve: 'FV-108' }, dev: [1.5, 'LOW'] },
   { tag: 'LIC-109', action: 'direct', kc: 2.0, ti: 600, td: 0, sp: 50, op: 33, mode: 'AUTO', output: { valve: 'LV-109' }, dev: [15, 'LOW'] },
   { tag: 'LIC-110', action: 'direct', kc: 2.0, ti: 600, td: 0, sp: 50, op: 53, mode: 'AUTO', output: { valve: 'LV-110' }, dev: [15, 'LOW'] },

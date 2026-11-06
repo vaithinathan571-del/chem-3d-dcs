@@ -11,6 +11,7 @@ let runtime = null;
 let user = null;
 let lastSeq = 0;
 let timer = null;
+let lastTraining = -1;
 
 const post = (msg) => self.postMessage(msg);
 
@@ -26,7 +27,12 @@ function startBroadcast() {
   timer = setInterval(() => {
     const events = runtime.events.since(lastSeq);
     lastSeq = runtime.events.seq;
-    post({ type: 'state', state: runtime.liveState(), events });
+    const msg = { type: 'state', state: runtime.liveState(), events };
+    if (runtime.trainer.version !== lastTraining) {
+      lastTraining = runtime.trainer.version;
+      msg.trainingResults = runtime.trainer.results;
+    }
+    post(msg);
   }, BROADCAST_MS);
 }
 
@@ -45,8 +51,10 @@ self.onmessage = (e) => {
           state: runtime.liveState(),
           events: runtime.events.query({ limit: 300 }),
           snapshots: runtime.snapshots.list(),
+          trainingResults: runtime.trainer.results,
         });
         lastSeq = runtime.events.seq;
+        lastTraining = runtime.trainer.version;
         startBroadcast();
         break;
       }

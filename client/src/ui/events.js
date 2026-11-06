@@ -4,7 +4,7 @@
 import { store } from '../store.js';
 import { h, clear, fmtTime, PRIORITY_CLASS } from './dom.js';
 
-const CATEGORIES = ['ALL', 'ALARM', 'OPERATOR', 'ENGINEER', 'SIS', 'INSTRUCTOR', 'SYSTEM'];
+const CATEGORIES = ['ALL', 'ALARM', 'OPERATOR', 'ENGINEER', 'SIS', 'INSTRUCTOR', 'TRAINING', 'SYSTEM'];
 
 export function createEvents(root) {
   let category = 'ALL';

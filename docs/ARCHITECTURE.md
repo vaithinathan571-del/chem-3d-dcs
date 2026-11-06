@@ -107,6 +107,25 @@ SIS sensors read the true process value. A DCS transmitter fault therefore canno
 - **Shelving.** Up to 8 h, then the alarm unshelves itself. CRITICAL alarms cannot be shelved.
 - **Flood detection.** More than 100 annunciations in 10 minutes (an average of 10 per minute).
 
+## Training engine
+
+`server/src/training/` holds the scenario catalogue and the scoring engine. Like the rest of the runtime it has no Node dependencies, so exercises run identically on the server and in the standalone browser build.
+
+- **Start.** The plant is restored from the baseline snapshot, then an optional `setup` is applied (for example, a low feed-tank level).
+- **Timeline.** Events fire at fixed simulated times. They activate or clear malfunctions, post field messages or show hints. Upsets are recorded for the debrief but hidden from the trainee's live view and the event journal.
+- **Scoring.** Objectives are sampled every simulated second against the *true* process values, not the possibly faulty transmitter readings. Each scenario's weights sum to 100.
+
+| Objective type | Scored as |
+| --- | --- |
+| `limit` | fraction of time a value stays within min/max |
+| `noTrip` / `noAlarm` | all-or-nothing: the listed SIS functions / alarms must not activate (an SIS bypass voids `noTrip`) |
+| `alarmResponse` | fraction of alarms raised during the exercise that were acknowledged (or shelved) within the target time |
+| `reachBy` | the value must reach a range before a deadline (e.g. cut feed within 5 minutes) |
+| `modeBy` | the operator must take a loop out of its normal mode before a deadline |
+| `endValue` / `endMotor` / `endModes` | plant state at the end (averaged over a window for values) |
+
+Grades: A ≥ 90, B ≥ 75, C ≥ 60, otherwise D. Loading a snapshot or toggling a malfunction during a run aborts it. Results (the last 30) are pushed to clients whenever they change. The scenario tests in `server/test/training.test.js` keep exercises honest: a scripted competent operator must score an A, and doing nothing must fail.
+
 ## Extending the plant
 
 1. Add a point to `ANALOG_POINTS` in `server/src/plant/plantConfig.js`, with its range, units and alarm limits.

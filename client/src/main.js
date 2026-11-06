@@ -13,6 +13,7 @@ import { createTrends } from './ui/trends.js';
 import { createEvents } from './ui/events.js';
 import { createSis } from './ui/sis.js';
 import { createInstructor } from './ui/instructor.js';
+import { createTraining, mmss } from './ui/training.js';
 
 const app = document.getElementById('app');
 /** Standalone builds (GitHub Pages) run the DCS runtime in a Web Worker instead of on a server. */
@@ -108,12 +109,13 @@ function buildShell() {
   const simTime = h('span.simtime');
   const speed = h('span.badge.speed');
   const frozen = h('span.badge.frozen', { hidden: true }, 'FROZEN');
+  const trainingBadge = h('button.badge.training-badge', { hidden: true, title: 'Exercise in progress – open the Training tab', onclick: () => selectTab('training') });
   const conn = h('span.conn', { title: 'Connection' });
   const userEl = h('span.user');
   const topbar = h('header.topbar', {},
     h('div.brand', {}, h('img', { src: ICON, alt: '', width: 22, height: 22 }), h('span', {}, 'CHEM-3D DCS')),
     h('div.plant-name'),
-    h('div.top-status', {}, clock, simTime, speed, frozen,
+    h('div.top-status', {}, clock, simTime, speed, frozen, trainingBadge,
       STANDALONE ? h('span.badge.standalone', { title: 'Standalone demo – the simulation runs in this browser tab' }, 'BROWSER SIM') : null),
     h('div.top-right', {}, conn, userEl,
       h('button.btn.small', { onclick: () => { client.logout(); location.reload(); } }, 'Sign out')));
@@ -139,7 +141,7 @@ function buildShell() {
 
   // Dock
   const tabs = [
-    ['overview', 'Overview'], ['alarms', 'Alarms'], ['trends', 'Trends'], ['events', 'Events'], ['sis', 'Safety (SIS)'], ['instructor', 'Instructor'],
+    ['overview', 'Overview'], ['alarms', 'Alarms'], ['trends', 'Trends'], ['events', 'Events'], ['sis', 'Safety (SIS)'], ['training', 'Training'], ['instructor', 'Instructor'],
   ];
   const panes = Object.fromEntries(tabs.map(([k]) => [k, h(`div.pane.pane-${k}`, { role: 'tabpanel', id: `pane-${k}` })]));
   const alarmCount = h('span.tab-count');
@@ -190,6 +192,11 @@ function buildShell() {
       trends.addPens(series);
       selectTab('trends');
     },
+    openTab: (k) => selectTab(k),
+    setTrainingBadge: (a) => {
+      trainingBadge.hidden = !a;
+      if (a) setText(trainingBadge, `🎓 ${a.scenarioId} ${mmss(a.elapsed)}/${mmss(a.duration)} · ${a.score}`);
+    },
   };
 
   createAlarmBanner(banner, ctx);
@@ -199,6 +206,7 @@ function buildShell() {
   const trends = createTrends(panes.trends, client);
   eventsPanel = createEvents(panes.events);
   createSis(panes.sis, ctx);
+  createTraining(panes.training, ctx);
   createInstructor(panes.instructor, ctx);
   selectTab(pref.get('tab', 'overview'));
 
@@ -220,13 +228,16 @@ function buildShell() {
 
   // Network wiring
   client.addEventListener('hello', (e) => {
-    const { user, config, state, events, snapshots } = e.detail;
-    store.init({ user, config, state, events, snapshots });
+    const { user, config, state, events, snapshots, trainingResults } = e.detail;
+    store.init({ user, config, state, events, snapshots, trainingResults });
     setText(topbar.querySelector('.plant-name'), config.plant.name);
     setText(userEl, `${user.displayName} · ${user.role}`);
     document.title = `CHEM-3D DCS – ${config.plant.id}`;
   });
-  client.addEventListener('state', (e) => store.update(e.detail.state, e.detail.events));
+  client.addEventListener('state', (e) => {
+    if (e.detail.trainingResults) store.setTrainingResults(e.detail.trainingResults);
+    store.update(e.detail.state, e.detail.events);
+  });
   client.addEventListener('snapshots', (e) => store.setSnapshots(e.detail));
   client.addEventListener('alarmConfig', (e) => store.updateAlarmConfig(e.detail));
   client.addEventListener('connection', (e) => {

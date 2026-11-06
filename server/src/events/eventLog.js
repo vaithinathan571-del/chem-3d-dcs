@@ -3,7 +3,7 @@
  * action, SIS action and instructor intervention is recorded with the
  * simulation timestamp and the user responsible.
  */
-export const EVENT_CATEGORIES = ['ALARM', 'OPERATOR', 'ENGINEER', 'SIS', 'INSTRUCTOR', 'SYSTEM'];
+export const EVENT_CATEGORIES = ['ALARM', 'OPERATOR', 'ENGINEER', 'SIS', 'INSTRUCTOR', 'TRAINING', 'SYSTEM'];
 
 export class EventLog {
   constructor({ capacity = 5000, clock } = {}) {

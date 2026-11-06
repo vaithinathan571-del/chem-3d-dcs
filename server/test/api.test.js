@@ -110,6 +110,17 @@ test('WebSocket: rejects missing token, sends hello + state, executes commands',
   await waitFor((m) => m.type === 'result' && m.id === 8 && m.ok);
   const snaps = await waitFor((m) => m.type === 'snapshots');
   assert.ok(snaps.items.some((x) => x.name === 'ws test'));
+
+  // Training: catalogue in the config, live status in state, results pushed on change.
+  assert.equal(hello.config.scenarios.length, 5);
+  assert.deepEqual(hello.trainingResults, []);
+  ws.send(JSON.stringify({ type: 'command', id: 9, action: 'scenarioStart', params: { id: 'SC-01' } }));
+  await waitFor((m) => m.type === 'result' && m.id === 9 && m.ok);
+  await waitFor((m) => m.type === 'state' && m.state.training.active?.scenarioId === 'SC-01');
+  ws.send(JSON.stringify({ type: 'command', id: 10, action: 'scenarioAbort', params: {} }));
+  const pushed = await waitFor((m) => m.type === 'state' && m.trainingResults?.length === 1);
+  assert.equal(pushed.trainingResults[0].status, 'aborted');
+  assert.equal(pushed.state.training.active, null);
 });
 
 test('auth tokens: expiry and tampering are rejected', () => {

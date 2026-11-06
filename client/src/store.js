@@ -10,6 +10,7 @@ class Store {
     this.state = null;
     this.events = [];
     this.snapshots = [];
+    this.trainingResults = [];
     this.connected = false;
     this.selection = null; // {kind, id}
     this.listeners = new Map();
@@ -32,17 +33,19 @@ class Store {
     }
   }
 
-  init({ user, config, state, events, snapshots }) {
+  init({ user, config, state, events, snapshots, trainingResults }) {
     this.user = user;
     this.config = config;
     this.state = state;
     this.events = events ?? [];
     this.snapshots = snapshots ?? [];
+    this.trainingResults = trainingResults ?? [];
     this.buildIndex();
     this.emit('init', this);
     this.emit('state', state);
     this.emit('events', this.events);
     this.emit('snapshots', this.snapshots);
+    this.emit('trainingResults', this.trainingResults);
   }
 
   buildIndex() {
@@ -78,6 +81,11 @@ class Store {
       this.emit('newEvents', newEvents);
     }
     this.emit('state', state);
+  }
+
+  setTrainingResults(items) {
+    this.trainingResults = items;
+    this.emit('trainingResults', items);
   }
 
   setSnapshots(items) {
