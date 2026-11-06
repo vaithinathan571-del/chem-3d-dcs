@@ -473,6 +473,14 @@ export class PlantScene {
     this.labelRenderer.render(this.scene, this.camera);
   }
 
+  /** Stop rendering while another view (the 2D P&ID) covers the viewport. */
+  setPaused(paused) {
+    if (paused === this.paused) return;
+    this.paused = paused;
+    this.renderer.setAnimationLoop(paused ? null : () => this.frame());
+    this.labelRenderer.domElement.style.display = paused ? 'none' : '';
+  }
+
   dispose() {
     this.renderer.setAnimationLoop(null);
     this.timer.dispose?.();

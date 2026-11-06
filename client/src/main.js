@@ -14,6 +14,7 @@ import { createEvents } from './ui/events.js';
 import { createSis } from './ui/sis.js';
 import { createInstructor } from './ui/instructor.js';
 import { createTraining, mmss } from './ui/training.js';
+import { PidView } from './pid/PidView.js';
 
 const app = document.getElementById('app');
 /** Standalone builds (GitHub Pages) run the DCS runtime in a Web Worker instead of on a server. */
@@ -132,9 +133,32 @@ function buildShell() {
   const legend = h('div.legend3d', {},
     h('span', {}, h('i.sw.a'), 'Reactant A'), h('span', {}, h('i.sw.b'), 'Product B'),
     h('span', {}, h('i.sw.run'), 'Running'), h('span', {}, h('i.sw.forced'), 'SIS forced'));
-  const viewToolbar = h('div.view-toolbar', {}, viewButtons, labelSel);
+  const modeButtons = [['3d', '3D'], ['pid', 'P&ID']].map(([k, label]) =>
+    h('button.seg-btn', { dataset: { view: k }, onclick: () => setView(k), 'aria-pressed': 'false' }, label));
+  const controls3d = h('div.view-group', {}, viewButtons, labelSel);
+  const fitBtn = h('button.btn.small.ghost', { hidden: true, title: 'Fit drawing (or double-click it)', onclick: () => pid.fit() }, 'Fit');
+  const viewToolbar = h('div.view-toolbar', {}, h('div.seg.view-switch', { role: 'group', 'aria-label': 'View' }, modeButtons), controls3d, fitBtn);
   const loading = h('div.loading', {}, 'Loading 3D plant…');
-  viewport.append(viewToolbar, legend, loading);
+  const pidWrap = h('div.pid-wrap', { hidden: true });
+  viewport.append(viewToolbar, legend, loading, pidWrap);
+  const pid = new PidView(pidWrap);
+  pid.onInterlock = () => selectTab('sis');
+  let viewMode = '3d';
+  function setView(mode) {
+    viewMode = mode === 'pid' ? 'pid' : '3d';
+    pref.set('view', viewMode);
+    for (const b of modeButtons) {
+      b.classList.toggle('active', b.dataset.view === viewMode);
+      b.setAttribute('aria-pressed', String(b.dataset.view === viewMode));
+    }
+    const isPid = viewMode === 'pid';
+    controls3d.hidden = isPid;
+    legend.hidden = isPid;
+    fitBtn.hidden = !isPid;
+    if (isPid) pid.show();
+    else pid.hide();
+    scene?.setPaused(isPid);
+  }
 
   const side = h('aside.side', { 'aria-label': 'Faceplate' });
   const main = h('main.main', {}, viewport, side);
@@ -209,12 +233,14 @@ function buildShell() {
   createTraining(panes.training, ctx);
   createInstructor(panes.instructor, ctx);
   selectTab(pref.get('tab', 'overview'));
+  setView(pref.get('view', '3d'));
 
   import('./scene/PlantScene.js')
     .then(({ PlantScene }) => {
       try {
         scene = new PlantScene(viewport);
         scene.setLabelMode(labelSel.value);
+        scene.setPaused(viewMode === 'pid');
         if (store.state) store.emit('state', store.state);
       } catch (err) {
         loading.textContent = `3D view unavailable: ${err.message}`;

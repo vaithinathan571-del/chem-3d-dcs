@@ -239,7 +239,7 @@ input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px s
 }
 .viewport { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: var(--bg); }
 .viewport canvas { display: block; touch-action: none; }
-.label-layer { position: absolute; inset: 0; pointer-events: none; }
+.label-layer { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
 .loading { position: absolute; inset: 0; display: grid; place-items: center; color: var(--muted); }
 .view-toolbar {
   position: absolute;
@@ -269,6 +269,72 @@ input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px s
 .sw.b { background: #f0a64a; }
 .sw.run { background: var(--ok); }
 .sw.forced { background: var(--forced); }
+
+.view-group { display: flex; gap: 4px; flex-wrap: wrap; }
+.view-switch { background: rgba(22, 27, 33, 0.85); }
+.view-switch .seg-btn { padding: 4px 12px; font-weight: 600; }
+
+/* 2D P&ID (ISA-101 high-performance style) */
+.pid-wrap { position: absolute; inset: 0; z-index: 4; background: #161b21; }
+.pid { display: block; width: 100%; height: 100%; touch-action: none; user-select: none; }
+.pid-bg { fill: #161b21; }
+.pid-halo { fill: none; stroke: #161b21; stroke-width: 9; stroke-linejoin: round; }
+.pid-line { fill: none; stroke: #a3adb8; stroke-width: 2.6; stroke-linejoin: round; }
+.pid-line.steam { stroke: #bf8f84; stroke-width: 2; }
+.pid-line.cw { stroke: #74ab9c; stroke-width: 2; }
+.pid-line.noflow { stroke-opacity: 0.35; }
+.pid-arrowhead { fill: #a3adb8; }
+.pid-signal { fill: none; stroke: #5f6b78; stroke-width: 1.2; stroke-dasharray: 5 4; }
+.pid-vessel { fill: none; stroke: #b4bec8; stroke-width: 2; }
+.pid-jacket { fill: none; stroke: #74ab9c; stroke-width: 1.5; stroke-dasharray: 6 4; }
+.pid-detail { fill: none; stroke: #6b7682; stroke-width: 1.5; }
+.pid-tray { stroke: #4a5560; stroke-width: 1; }
+.pid-liquid { fill-opacity: 0.5; }
+.pid text { font-family: var(--mono); }
+.pid-eqtag { fill: #d7dde4; font-size: 12px; font-weight: 700; }
+.pid-eqname { fill: #8a96a3; font-size: 9.5px; letter-spacing: 0.06em; }
+.pid-valve-body { fill: #e8edf2; stroke: #b4bec8; stroke-width: 1.5; }
+.pid-valve-stem { stroke: #b4bec8; stroke-width: 1.5; fill: none; }
+.pid-valve.forced .pid-valve-body, .legend-forced { stroke: var(--forced); fill: var(--forced); }
+.pid-valve.forced .pid-valve-stem { stroke: var(--forced); }
+.pid-valve.stuck .pid-valve-body { stroke: var(--p2); stroke-width: 2.5; animation: pid-blink 1s steps(1) infinite; }
+.pid-valve-pos { fill: #8a96a3; font-size: 10px; }
+.pid-pump { fill: none; stroke: #b4bec8; stroke-width: 2; }
+.pid-pump[data-status='RUNNING'], .pid-pump[data-status='STARTING'] { fill: #b4bec8; }
+.pid-pump[data-status='TRIPPED'] { fill: var(--p1); stroke: var(--p1); animation: pid-blink 0.8s steps(1) infinite; }
+.pid-pump-tri { fill: none; stroke: #b4bec8; stroke-width: 1.5; }
+.pid-pump-tri[data-status='RUNNING'], .pid-pump-tri[data-status='STARTING'] { fill: #161b21; stroke: #161b21; }
+.pid-motor-m { fill: #d7dde4; font-size: 11px; font-weight: 700; pointer-events: none; }
+.pid-motor:has(.pid-pump[data-status='RUNNING']) .pid-motor-m { fill: #161b21; }
+.pid-box { fill: #1f252d; stroke: #3a4450; stroke-width: 1; }
+.pid-tag { fill: #8a96a3; font-size: 10.5px; font-weight: 700; }
+.pid-mode { fill: #8a96a3; font-size: 10px; font-weight: 700; }
+.pid-mode[data-mode='MAN'] { fill: var(--man); }
+.pid-mode[data-mode='CAS'] { fill: var(--cas); }
+.pid-mode[data-mode='IL'] { fill: var(--forced); }
+.pid-pv { fill: #f2f5f8; font-size: 16px; font-weight: 700; }
+.pid-units, .pid-spop { fill: #8a96a3; font-size: 10px; }
+.pid-val { fill: #f2f5f8; font-size: 11px; font-weight: 600; }
+.pid-bar-bg { fill: #0f1317; }
+.pid-bar { fill: #6f8fb0; }
+.pid-bar-sp { fill: var(--cas); }
+.pid-block[data-alarm]:not([data-alarm='']) .pid-box { stroke: var(--al); stroke-width: 2.2; fill: color-mix(in srgb, var(--al) 16%, #1f252d); }
+.pid-block[data-alarm]:not([data-alarm='']) .pid-pv, .pid-block[data-alarm]:not([data-alarm='']) .pid-val { fill: var(--al); }
+.pid-eq[data-alarm]:not([data-alarm='']) .pid-vessel, .pid-motor[data-alarm]:not([data-alarm='']) .pid-pump { stroke: var(--al); stroke-width: 3; }
+.pid-block.unack .pid-box, .pid-eq.unack .pid-vessel, .pid-motor.unack .pid-pump { animation: pid-blink 1s steps(1) infinite; }
+.pid-il-shape { fill: #1f252d; stroke: #8a96a3; stroke-width: 1.5; }
+.pid-il-i { fill: #b4bec8; font-size: 10px; font-weight: 700; pointer-events: none; }
+.pid-il-tag { fill: #8a96a3; font-size: 9px; }
+.pid-il[data-state='tripped'] .pid-il-shape { fill: var(--p1); stroke: var(--p1); animation: pid-blink 0.8s steps(1) infinite; }
+.pid-il[data-state='tripped'] .pid-il-i { fill: #fff; }
+.pid-il[data-state='bypassed'] .pid-il-shape { stroke: var(--p3); stroke-dasharray: 3 2; }
+.pid-conn { fill: #1f252d; stroke: #6b7682; stroke-width: 1; }
+.pid-conn-text { fill: #9aa5b1; font-size: 9px; }
+.pid-legend-text { fill: #8a96a3; font-size: 10px; }
+.pid-pick { cursor: pointer; }
+.pid-pick:hover .pid-box, .pid-pick:hover .pid-vessel, .pid-pick:hover .pid-pump, .pid-pick:hover .pid-valve-body, .pid-pick:hover .pid-il-shape { stroke: #e8edf2; }
+.pid-pick.selected .pid-box, .pid-pick.selected .pid-vessel, .pid-pick.selected .pid-pump, .pid-pick.selected .pid-valve-body { stroke: var(--accent); stroke-width: 3; }
+@keyframes pid-blink { 50% { stroke-opacity: 0.25; fill-opacity: 0.35; } }
 
 /* 3D labels */
 .eq-label {
@@ -362,7 +428,7 @@ input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px s
 .badge.p3 { background: var(--p3); color: #111; border-color: var(--p3); }
 .badge.p4 { background: var(--p4); color: #111; border-color: var(--p4); }
 .badge.blink { animation: blink 1s steps(1) infinite; }
-.fp-main { display: grid; grid-template-columns: 46px 1fr; gap: 14px; }
+.fp-main { display: grid; grid-template-columns: 46px 1fr; gap: 14px; margin-top: 12px; }
 .bar {
   position: relative;
   height: 210px;

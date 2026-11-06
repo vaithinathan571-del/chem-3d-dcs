@@ -43,8 +43,8 @@ function emptyState(msg) {
     h('div.fp-empty-icon', { 'aria-hidden': 'true' }, '⌖'),
     h('p', {}, msg ?? 'Select equipment, a valve or a data card in the 3D view, or a tag in the overview, to open its faceplate.'),
     h('ul.fp-hints', {},
-      h('li', {}, 'Left-drag to orbit, right-drag to pan, wheel to zoom'),
-      h('li', {}, 'Double-click equipment to fly to it'),
+      h('li', {}, '3D: left-drag to orbit, right-drag to pan, wheel to zoom; double-click equipment to fly to it'),
+      h('li', {}, 'P&ID: drag to pan, wheel or pinch to zoom, double-click to fit'),
       h('li', {}, 'Flashing equipment has unacknowledged alarms')));
 }
 

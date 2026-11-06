@@ -19,6 +19,7 @@ A web-based **3D distributed control system (DCS) and operator training simulato
 | **Training exercises** | Five scored exercises: reactor temperature change, agitator trip, cooling-water failure, feed loss and silent transmitter drift. Each has a briefing, upsets on a timeline (hidden from the trainee until symptoms appear), field messages, hints, live objective tracking and a graded debrief (A–D) with a downloadable report. |
 | **Instructor station** | Run/freeze, 0.5×–50× simulation speed, 15 malfunctions (utilities, equipment, process, instruments), and snapshots that can be saved, loaded and persisted. |
 | **3D operator console** | Procedural 3D plant: live vessel levels coloured by composition, column tray temperature profile, rotating agitator and pumps, animated pipe flows, valve positions, hot-reactor glow and flashing alarm highlighting. Floating data cards, camera presets and click-to-faceplate navigation. |
+| **Live 2D P&ID** | A process graphic in the ISA-101 high-performance style that you can switch to from the 3D view. Equipment is grey on a dark background, and colour appears only for abnormal states. It shows live vessel levels, loop blocks (PV, SP, OP, mode and a mini bar), value tags, valves shaded by opening, pump status, flow-less lines dimmed, SIS function badges, and SIS-forced or stuck valves. Click anything to open its faceplate. Pan, zoom (wheel or pinch) and fit. |
 | **2D displays** | Faceplates (loop, indicator, motor, equipment), overview group display with KPIs, alarm summary, multi-pen trends, event journal, SIS matrix, instructor panel. |
 | **Security** | Role-based access (viewer / operator / engineer / instructor), scrypt-hashed passwords, HMAC-signed session tokens, CSP and security headers, request size limits. |
 
@@ -102,6 +103,7 @@ Environment variables are read at start-up. With Node 22 you can keep them in a 
 ## Using the console
 
 - **3D view.** Left-drag to orbit, right-drag to pan, scroll to zoom. Click equipment, a valve or a data-card row to open its faceplate. Double-click (or press `F`) to fly to the selection, and press `Esc` to deselect. Equipment with unacknowledged alarms flashes in the alarm's priority colour.
+- **P&ID view.** Switch between **3D** and **P&ID** in the top-left of the viewport (the choice is remembered). In the P&ID, drag to pan, use the wheel or a pinch to zoom, and double-click (or **Fit**) to see the whole unit. Click a loop block, value tag, valve, pump or vessel to open its faceplate, or an SIS diamond to jump to the Safety tab. The 3D renderer pauses while the P&ID is shown.
 - **Faceplates.** Set the mode (MAN/AUTO/CAS), enter or nudge SP and OP, tune Kc/Ti/Td (engineer role) and edit alarm limits (engineer role). The 📈 button sends the loop to the trend display.
 - **Alarm banner.** Shows the three most important alarms and the counts per priority. Use ACK / ACK ALL to acknowledge and the bell to mute the horn.
 - **Training exercises.** Open the **Training** tab, pick an exercise and read its briefing, then start it. The plant resets to normal operation, and the exercise injects its upsets on a timeline while you operate. The objectives panel shows your score building up live. At the end a debrief opens with your grade, a breakdown per objective, alarm-response statistics and a timeline, and you can download it as a report. Operators, engineers and instructors can all run exercises; instructors can also fast-forward them from the Instructor tab. Loading a snapshot or changing a malfunction during an exercise aborts it, and bypassing an SIS function voids the "no trip" objective.
@@ -171,6 +173,7 @@ server/                 Node.js DCS server (no build step, ESM)
   test/                 node:test suites
 client/                 Vite + Three.js operator console (vanilla JS)
   src/scene/            3D plant layout, procedural equipment models, scene controller
+  src/pid/              live 2D P&ID (SVG process graphic)
   src/ui/               faceplates, alarms, trends, events, SIS, instructor panels
   src/net/              REST/WebSocket client and the standalone (Web Worker) client
   src/local/            Web Worker hosting the DCS runtime for the standalone build

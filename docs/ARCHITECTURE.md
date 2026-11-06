@@ -107,6 +107,13 @@ SIS sensors read the true process value. A DCS transmitter fault therefore canno
 - **Shelving.** Up to 8 h, then the alarm unshelves itself. CRITICAL alarms cannot be shelved.
 - **Flood detection.** More than 100 annunciations in 10 minutes (an average of 10 per minute).
 
+## Operator displays
+
+The client offers two views of the same live state, which you switch between in the viewport toolbar:
+
+- **3D** (`client/src/scene/`): procedurally built equipment animated from the state stream.
+- **P&ID** (`client/src/pid/PidView.js`): an SVG process graphic built from a declarative layout (lines, valves, pumps, loop blocks, value tags, SIS badges). It follows ISA-101 high-performance HMI practice: grey normal state, colour only for abnormal conditions (alarm priority colours, flashing while unacknowledged, magenta for SIS-forced valves, orange for stuck valves, red for tripped pumps and SIS functions). Utilities are drawn as off-page connectors so the process flow stays readable. Each line is drawn over a background-coloured halo, so crossings show a visible gap. Its update functions run only while the view is visible, and the 3D renderer pauses while it is.
+
 ## Training engine
 
 `server/src/training/` holds the scenario catalogue and the scoring engine. Like the rest of the runtime it has no Node dependencies, so exercises run identically on the server and in the standalone browser build.

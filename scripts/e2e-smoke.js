@@ -88,6 +88,13 @@ try {
   await page.waitForFunction(() => document.querySelector('.fp .kv .val')?.textContent === '9.50', null, { timeout: 5000 });
   check(true, 'setpoint change applied');
 
+  await page.click('.view-switch button:has-text("P&ID")');
+  await page.click('.pid-block:has(text:text-is("TIC-104"))');
+  await page.waitForSelector('.fp h2:has-text("TIC-104")');
+  check(await page.isHidden('.label-layer'), 'P&ID view replaces the 3D labels');
+  check(true, 'P&ID graphic opens faceplates');
+  await page.click('.view-switch button:has-text("3D")');
+
   await page.click('.tab[data-tab=events]');
   await page.waitForSelector('td:has-text("FIC-101 SP")', { timeout: 5000 });
   check(true, 'operator action recorded in the event journal');
